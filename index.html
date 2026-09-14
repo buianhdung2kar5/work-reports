@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Báo Cáo Tiến Độ Tập Văn Nghệ | Sinh Viên Chi Đoàn K65</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          screens: {
+            'xs': '475px',
+          },
+          colors: {
+            brand: {
+              50: '#eep2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-full flex flex-col antialiased">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-indigo-600 text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
+
+  <!-- Header Navigation -->
+  <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 shrink-0">
+            <i data-lucide="music-4" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-sm sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight line-clamp-1">Báo Cáo Tiến Độ Tập Văn Nghệ</h1>
+              <span id="badge-top-status" class="hidden xs:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold badge-status-dang-tap">Đang tập</span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-500 flex items-center gap-1.5 sm:gap-2 mt-0.5 line-clamp-1">
+              <span>Đơn vị: <strong class="text-indigo-600 font-semibold" id="info-class">Chi Đoàn CNTT K65</strong></span>
+              <span class="hidden xs:inline">•</span>
+              <span class="hidden xs:inline">Dự án: <strong class="text-slate-700 font-medium" id="info-show-name">Vũ Điệu Tuổi Trẻ</strong></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Desktop Action Buttons -->
+        <div class="hidden md:flex items-center space-x-3">
+          <button id="btn-reset-data" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors" title="Khôi phục dữ liệu ban đầu">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Reset dữ liệu</span>
+          </button>
+          <button id="btn-open-log-modal" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md shadow-indigo-500/20 transition-all transform active:scale-95">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Ghi log buổi tập</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Desktop / Tablet) -->
+      <nav class="hidden md:flex space-x-1 sm:space-x-3 border-t border-slate-100 overflow-x-auto py-2 no-scrollbar" aria-label="Tabs Navigation">
+        <button type="button" data-tab="tong-quan" class="tab-btn active inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-indigo-600 bg-indigo-50">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Tổng quan</span>
+        </button>
+        <button type="button" data-tab="muc-tieu-tuan" class="tab-btn inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">
+          <i data-lucide="calendar-range" class="w-4 h-4"></i>
+          <span>Mục tiêu tuần</span>
+        </button>
+        <button type="button" data-tab="nhat-ky-buoi-tap" class="tab-btn inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">
+          <i data-lucide="notebook-pen" class="w-4 h-4"></i>
+          <span>Nhật ký buổi tập</span>
+        </button>
+        <button type="button" data-tab="ghi-chu" class="tab-btn inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">
+          <i data-lucide="sticky-note" class="w-4 h-4"></i>
+          <span>Ghi chú tập trung</span>
+        </button>
+        <button type="button" data-tab="quan-tri" class="tab-btn inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">
+          <i data-lucide="settings" class="w-4 h-4 text-purple-600"></i>
+          <span class="text-purple-900 font-bold">Quản trị (CMS)</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content with responsive padding for bottom mobile nav -->
+  <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 pb-28 md:pb-8">
+    
+    <!-- ==================== TAB 1: TỔNG QUAN ==================== -->
+    <section id="tab-tong-quan" class="tab-content active space-y-6">
+      
+      <!-- Top Banner Overview -->
+      <div class="glass-card rounded-3xl p-5 sm:p-8 relative overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
+        <div class="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8">
+          <i data-lucide="sparkles" class="w-96 h-96"></i>
+        </div>
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+          <div class="lg:col-span-2 space-y-3 sm:space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-indigo-200 border border-white/10">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <span>Ngày biểu diễn: <strong id="overview-perf-date" class="text-white">20/10/2026</strong></span>
+              <span class="mx-1">•</span>
+              <span id="countdown-days" class="text-emerald-300 font-semibold">Còn 36 ngày</span>
+            </div>
+            
+            <h2 id="overview-title" class="text-hero-title font-extrabold text-white tracking-tight">
+              Vũ Điệu Tuổi Trẻ - Chào Tân Sinh Viên
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-indigo-100/90 pt-1">
+              <div class="flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-indigo-300 shrink-0"></i>
+                <span>Trưởng nhóm: <strong id="overview-teachers" class="text-white font-medium">Nguyễn Văn Nam & Trần Thị Hương</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="target" class="w-4 h-4 text-indigo-300 shrink-0"></i>
+                <span>Trạng thái: <span id="overview-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-400 text-amber-950">Đang tập</span></span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-white/10 text-xs text-indigo-200">
+              <span class="font-semibold text-white">Mục tiêu chung:</span>
+              <p id="overview-general-goal" class="mt-1 leading-relaxed text-indigo-100">
+                Thuộc toàn bộ bài hát phối khí mới, di chuyển chuyển khối đội hình 4 hàng ngang, thực hiện đều động tác múa hiện đại, biểu diễn tự tin tại Hội trường A.
+              </p>
+            </div>
+          </div>
+
+          <!-- Circular Gauge Progress Chart -->
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
+            <h3 class="text-xs uppercase tracking-wider text-indigo-200 font-semibold mb-2">Tiến độ tổng thể</h3>
+            <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center">
+              <canvas id="chart-overall-gauge" width="144" height="144"></canvas>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+                <span id="overall-percent-num" class="text-2xl sm:text-3xl font-black tabular-nums tracking-tight">56%</span>
+                <span class="text-[10px] text-indigo-200 uppercase font-medium">Hoàn thành</span>
+              </div>
+            </div>
+            <p id="overall-status-text" class="text-xs text-indigo-200 mt-2 font-medium">Cần tăng tốc tuần 3 & 4</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid (1 col mobile, 2 col tablet, 4 col desktop) -->
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <!-- Metric 1 -->
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-emerald-500">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+            <i data-lucide="check-circle-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Mục tiêu đạt</p>
+            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-completed-weeks">1 / 4 Tuần</p>
+          </div>
+        </div>
+
+        <!-- Metric 2 -->
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-indigo-500">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+            <i data-lucide="notebook" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Buổi tập đã ghi</p>
+            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-total-logs">3 Buổi</p>
+          </div>
+        </div>
+
+        <!-- Metric 3 -->
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-amber-500">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+            <i data-lucide="users" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Tổng thành viên</p>
+            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-total-members">35 Sinh viên</p>
+          </div>
+        </div>
+
+        <!-- Metric 4 -->
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-rose-500">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+            <i data-lucide="alert-triangle" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Cần hỗ trợ gấp</p>
+            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-need-support-count">3 Sinh viên / Nhóm</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts & Priority Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Weekly Progress Bar Chart -->
+        <div class="lg:col-span-2 glass-card rounded-2xl p-4 sm:p-6 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900">Tiến Độ Theo Từng Tuần</h3>
+              <p class="text-xs text-slate-500">Mức độ hoàn thành mục tiêu (%)</p>
+            </div>
+            <span class="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold">Tự động tổng hợp</span>
+          </div>
+          <div class="h-56 sm:h-64 relative">
+            <canvas id="chart-weekly-bar"></canvas>
+          </div>
+        </div>
+
+        <!-- Immediate Priorities Card WITH CRUD BUTTON -->
+        <div class="glass-card rounded-2xl p-4 sm:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="flame" class="w-4 h-4 sm:w-5 sm:h-5 text-rose-500"></i>
+                <span>Việc Ưu Tiên Buổi Sau</span>
+              </h3>
+              <button type="button" id="btn-add-priority" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul id="list-priorities" class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-slate-700">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+          <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs text-slate-500">Tiêu chí sẵn sàng biểu diễn:</span>
+            <span class="text-xs font-bold text-emerald-600">Đạt 95% + Xuất sắc</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== TAB 2: MỤC TIÊU TUẦN ==================== -->
+    <section id="tab-muc-tieu-tuan" class="tab-content space-y-6">
+      
+      <!-- Filter & Action Bar -->
+      <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+          <span class="text-xs font-semibold text-slate-700">Lọc theo trạng thái:</span>
+          <select id="filter-week-status" class="text-xs font-medium bg-slate-100 border-none rounded-xl px-3 py-2 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">Tất cả trạng thái</option>
+            <option value="Đạt">Đạt (Hoàn thành)</option>
+            <option value="Đang thực hiện">Đang thực hiện</option>
+            <option value="Cần hỗ trợ">Cần hỗ trợ</option>
+            <option value="Chưa bắt đầu">Chưa bắt đầu</option>
+          </select>
+        </div>
+
+        <button type="button" id="btn-add-week-goal" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md transition-all">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Thêm Mục Tiêu Tuần Mới</span>
+        </button>
+      </div>
+
+      <!-- Weekly Goals List Grid -->
+      <div id="weekly-goals-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+
+    <!-- ==================== TAB 3: NHẬT KÝ BUỔI TẬP ==================== -->
+    <section id="tab-nhat-ky-buoi-tap" class="tab-content space-y-6">
+      
+      <!-- Action Header -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <div class="relative w-full sm:w-72">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="search-logs" placeholder="Tìm nhật ký buổi tập..." class="w-full pl-9 pr-4 py-2.5 text-xs font-medium bg-slate-100 border-none rounded-xl text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <button type="button" id="btn-open-log-modal-tab3" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md transition-all">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Thêm nhật ký buổi tập</span>
+        </button>
+      </div>
+
+      <!-- Practice Logs List -->
+      <div id="logs-list-container" class="space-y-4">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+
+    <!-- ==================== TAB 4: GHI CHÚ TẬP TRUNG ==================== -->
+    <section id="tab-ghi-chu" class="tab-content space-y-6">
+      <div class="glass-card rounded-2xl p-4 bg-indigo-50/50 border-indigo-100 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <i data-lucide="info" class="w-5 h-5 text-indigo-600 shrink-0"></i>
+          <p class="text-xs text-indigo-900 leading-relaxed">
+            Quản lý các ghi chú chuẩn bị: Nhạc, Đội hình, Trang phục, Lịch diễn và Theo dõi sức khỏe thành viên.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="notes-grid-container">
+        <!-- Category 1: Nhạc & Âm thanh -->
+        <div class="glass-card glass-card-hover rounded-2xl p-5 border-t-4 border-t-indigo-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <i data-lucide="music" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Nhạc & Âm thanh</h3>
+                  <p class="text-[11px] text-slate-500">Phiên bản, cắt ghép, âm lượng</p>
+                </div>
+              </div>
+              <button type="button" data-action="add-note" data-category="music" class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-700" id="notes-music"></ul>
+          </div>
+        </div>
+
+        <!-- Category 2: Động tác & Đội hình -->
+        <div class="glass-card glass-card-hover rounded-2xl p-5 border-t-4 border-t-purple-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+                  <i data-lucide="footprints" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Động tác & Đội hình</h3>
+                  <p class="text-[11px] text-slate-500">Vị trí đứng, mốc nhầm</p>
+                </div>
+              </div>
+              <button type="button" data-action="add-note" data-category="formation" class="px-2 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-600 text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-700" id="notes-formation"></ul>
+          </div>
+        </div>
+
+        <!-- Category 3: Trang phục & Đạo cụ -->
+        <div class="glass-card glass-card-hover rounded-2xl p-5 border-t-4 border-t-pink-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center">
+                  <i data-lucide="shirt" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Trang phục & Đạo cụ</h3>
+                  <p class="text-[11px] text-slate-500">Số lượng, thời hạn chuẩn bị</p>
+                </div>
+              </div>
+              <button type="button" data-action="add-note" data-category="costumes" class="px-2 py-1 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-700" id="notes-costumes"></ul>
+          </div>
+        </div>
+
+        <!-- Category 4: Lịch tập & Biểu diễn -->
+        <div class="glass-card glass-card-hover rounded-2xl p-5 border-t-4 border-t-amber-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                  <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Lịch tập & Biểu diễn</h3>
+                  <p class="text-[11px] text-slate-500">Thời gian, địa điểm, khớp nhạc</p>
+                </div>
+              </div>
+              <button type="button" data-action="add-note" data-category="schedule" class="px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-600 text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-700" id="notes-schedule"></ul>
+          </div>
+        </div>
+
+        <!-- Category 5: Sức khỏe & Sĩ số -->
+        <div class="glass-card glass-card-hover rounded-2xl p-5 border-t-4 border-t-emerald-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                  <i data-lucide="heart-pulse" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Sức khỏe & Sĩ số</h3>
+                  <p class="text-[11px] text-slate-500">Sinh viên theo dõi đặc biệt</p>
+                </div>
+              </div>
+              <button type="button" data-action="add-note" data-category="health" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 text-xs font-semibold flex items-center gap-1 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Thêm</span>
+              </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-700" id="notes-health"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== TAB 5: QUẢN TRỊ (CMS SETTINGS) ==================== -->
+    <section id="tab-quan-tri" class="tab-content space-y-6">
+      <div class="glass-card rounded-3xl p-5 sm:p-8 space-y-6 border-t-4 border-t-purple-600">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+              <i data-lucide="settings" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div>
+              <h2 class="text-base sm:text-xl font-bold text-slate-900">CMS Quản Trị Cấu Hình Tiết Mục</h2>
+              <p class="text-xs text-slate-500">Chỉnh sửa đầy đủ các thông số tổng quan của chi đoàn và chương trình văn nghệ sinh viên</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="form-cms-settings" class="space-y-4 sm:space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            <div>
+              <label for="cms-show-name" class="block text-xs font-semibold text-slate-700 mb-1">Tên chương trình / tiết mục <span class="text-rose-500">*</span></label>
+              <input type="text" id="cms-show-name" required placeholder="VD: Vũ Điệu Tuổi Trẻ - Chào Tân Sinh Viên" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+
+            <div>
+              <label for="cms-class-name" class="block text-xs font-semibold text-slate-700 mb-1">Đơn vị / Chi đoàn <span class="text-rose-500">*</span></label>
+              <input type="text" id="cms-class-name" required placeholder="VD: Chi Đoàn CNTT K65" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+
+            <div>
+              <label for="cms-total-members" class="block text-xs font-semibold text-slate-700 mb-1">Tổng số thành viên (Sinh viên) <span class="text-rose-500">*</span></label>
+              <input type="number" id="cms-total-members" min="1" max="200" required placeholder="VD: 35" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            <div>
+              <label for="cms-teachers" class="block text-xs font-semibold text-slate-700 mb-1">Trưởng nhóm / Phụ trách <span class="text-rose-500">*</span></label>
+              <input type="text" id="cms-teachers" required placeholder="VD: Nguyễn Văn Nam & Trần Thị Hương" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+
+            <div>
+              <label for="cms-perf-date" class="block text-xs font-semibold text-slate-700 mb-1">Ngày biểu diễn chính thức <span class="text-rose-500">*</span></label>
+              <input type="date" id="cms-perf-date" required class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+
+            <div>
+              <label for="cms-overall-status" class="block text-xs font-semibold text-slate-700 mb-1">Trạng thái chung chương trình <span class="text-rose-500">*</span></label>
+              <select id="cms-overall-status" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-semibold">
+                <option value="Đang tập">Đang tập (Chờ tăng tốc)</option>
+                <option value="Cần hỗ trợ">Cần hỗ trợ (Cảnh báo)</option>
+                <option value="Đạt">Đạt (Sẵn sàng biểu diễn)</option>
+                <option value="Chưa bắt đầu">Chưa bắt đầu</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="cms-general-goal" class="block text-xs font-semibold text-slate-700 mb-1">Mục tiêu chung <span class="text-rose-500">*</span></label>
+            <textarea id="cms-general-goal" rows="3" required placeholder="Ghi rõ định hướng và mục tiêu biểu diễn của chi đoàn..." class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
+          </div>
+
+          <div>
+            <label for="cms-completion-criteria" class="block text-xs font-semibold text-slate-700 mb-1">Tiêu chí hoàn thành <span class="text-rose-500">*</span></label>
+            <textarea id="cms-completion-criteria" rows="3" required placeholder="Ví dụ: 95% sinh viên thuộc bài, trang phục cờ đoàn đầy đủ, duyệt đạt điểm xuất sắc..." class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 active:bg-purple-800 rounded-xl shadow-lg shadow-purple-500/25 transition-all transform active:scale-95">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span>Lưu Cấu Hình Tiết Mục (CMS)</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Responsive Mobile Bottom Navigation (Visible on mobile screens) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-1 py-1.5 flex justify-around items-center shadow-lg">
+    <button type="button" data-tab="tong-quan" class="tab-btn-mobile active flex flex-col items-center py-1 px-2.5 text-[10px] font-medium text-indigo-600">
+      <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+      <span class="mt-0.5">Tổng quan</span>
+    </button>
+    <button type="button" data-tab="muc-tieu-tuan" class="tab-btn-mobile flex flex-col items-center py-1 px-2.5 text-[10px] font-medium text-slate-500">
+      <i data-lucide="calendar-range" class="w-5 h-5"></i>
+      <span class="mt-0.5">Mục tiêu</span>
+    </button>
+    <button type="button" data-tab="nhat-ky-buoi-tap" class="tab-btn-mobile flex flex-col items-center py-1 px-2.5 text-[10px] font-medium text-slate-500">
+      <i data-lucide="notebook-pen" class="w-5 h-5"></i>
+      <span class="mt-0.5">Nhật ký</span>
+    </button>
+    <button type="button" data-tab="ghi-chu" class="tab-btn-mobile flex flex-col items-center py-1 px-2.5 text-[10px] font-medium text-slate-500">
+      <i data-lucide="sticky-note" class="w-5 h-5"></i>
+      <span class="mt-0.5">Ghi chú</span>
+    </button>
+    <button type="button" data-tab="quan-tri" class="tab-btn-mobile flex flex-col items-center py-1 px-2.5 text-[10px] font-medium text-slate-500">
+      <i data-lucide="settings" class="w-5 h-5"></i>
+      <span class="mt-0.5">Quản trị</span>
+    </button>
+  </div>
+
+  <!-- MODAL 1: ADD / EDIT PRACTICE LOG -->
+  <div id="modal-log" class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 hidden">
+    <div id="modal-log-backdrop" class="modal-backdrop absolute inset-0"></div>
+    <div class="modal-container relative bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-100 z-10 my-auto">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="notebook-pen" class="w-5 h-5 text-indigo-400"></i>
+          <h3 id="modal-log-title" class="text-base font-bold">Thêm Nhật Ký Buổi Tập</h3>
+        </div>
+        <button type="button" id="btn-close-log-modal" class="text-slate-400 hover:text-white transition-colors p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-practice-log" class="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <input type="hidden" id="form-log-id" value="">
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-log-date" class="block text-xs font-semibold text-slate-700 mb-1">Ngày tập <span class="text-rose-500">*</span></label>
+            <input type="date" id="form-log-date" required class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-log-session" class="block text-xs font-semibold text-slate-700 mb-1">Buổi tập thứ <span class="text-rose-500">*</span></label>
+            <input type="number" id="form-log-session" min="1" max="100" required placeholder="VD: 4" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="form-log-content" class="block text-xs font-semibold text-slate-700 mb-1">Nội dung đã tập <span class="text-rose-500">*</span></label>
+          <input type="text" id="form-log-content" required placeholder="VD: Ôn động tác múa đoạn 2, ghép đội hình..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-log-attendance" class="block text-xs font-semibold text-slate-700 mb-1">Số sinh viên tham gia <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-log-attendance" required placeholder="VD: 35/35" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-log-progress" class="block text-xs font-semibold text-slate-700 mb-1">Mức độ hoàn thành (%) <span class="text-rose-500">*</span></label>
+            <input type="number" id="form-log-progress" min="0" max="100" required placeholder="0 - 100" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="form-log-result" class="block text-xs font-semibold text-slate-700 mb-1">Kết quả đạt được</label>
+          <textarea id="form-log-result" rows="2" placeholder="VD: Đội múa nữ đi đúng tiết tấu bài hát..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div>
+          <label for="form-log-issues" class="block text-xs font-semibold text-slate-700 mb-1">Khó khăn / Điểm cần sửa</label>
+          <input type="text" id="form-log-issues" placeholder="VD: Nhóm nam bị trễ nhịp chuyển khối..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-log-support" class="block text-xs font-semibold text-slate-700 mb-1">Sinh viên / Nhóm cần hỗ trợ</label>
+            <input type="text" id="form-log-support" placeholder="VD: Sinh viên Nam, Nhóm nam..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-log-author" class="block text-xs font-semibold text-slate-700 mb-1">Người cập nhật <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-log-author" required placeholder="VD: Trưởng nhóm Nam" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="form-log-next-tasks" class="block text-xs font-semibold text-slate-700 mb-1">Việc cần làm buổi sau (Ưu tiên)</label>
+          <input type="text" id="form-log-next-tasks" placeholder="VD: Ôn lại cách di chuyển mốc hàng 3..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+          <button type="button" id="btn-cancel-log-modal" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Hủy</button>
+          <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-all">Lưu nhật ký</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD / EDIT WEEKLY GOAL -->
+  <div id="modal-week" class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 hidden">
+    <div id="modal-week-backdrop" class="modal-backdrop absolute inset-0"></div>
+    <div class="modal-container relative bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-100 z-10 my-auto">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="calendar-range" class="w-5 h-5 text-indigo-400"></i>
+          <h3 id="modal-week-title" class="text-base font-bold">Thêm Mục Tiêu Tuần Mới</h3>
+        </div>
+        <button type="button" id="btn-close-week-modal" class="text-slate-400 hover:text-white transition-colors p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-weekly-goal" class="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <input type="hidden" id="form-week-id" value="">
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-week-label" class="block text-xs font-semibold text-slate-700 mb-1">Tên tuần <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-week-label" required placeholder="VD: Tuần 5" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-week-timeframe" class="block text-xs font-semibold text-slate-700 mb-1">Khung thời gian <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-week-timeframe" required placeholder="VD: 20/10 - 25/10/2026" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="form-week-goal" class="block text-xs font-semibold text-slate-700 mb-1">Mục tiêu trọng tâm tuần <span class="text-rose-500">*</span></label>
+          <input type="text" id="form-week-goal" required placeholder="VD: Tổng duyệt toàn bộ tiết mục với ánh sáng sân khấu" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label for="form-week-content" class="block text-xs font-semibold text-slate-700 mb-1">Nội dung chi tiết cần tập <span class="text-rose-500">*</span></label>
+          <textarea id="form-week-content" rows="2" required placeholder="Mô tả cụ thể động tác, bài hát hay đội hình..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-week-target" class="block text-xs font-semibold text-slate-700 mb-1">Đối tượng / Nhóm phụ trách <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-week-target" required placeholder="VD: Toàn chi đoàn" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-week-progress" class="block text-xs font-semibold text-slate-700 mb-1">Mức độ hoàn thành (%) <span class="text-rose-500">*</span></label>
+            <input type="number" id="form-week-progress" min="0" max="100" required placeholder="0 - 100" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="form-week-criteria" class="block text-xs font-semibold text-slate-700 mb-1">Tiêu chí đánh giá hoàn thành <span class="text-rose-500">*</span></label>
+          <input type="text" id="form-week-criteria" required placeholder="VD: 95% sinh viên thuộc đúng nhịp bài hát" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label for="form-week-notes" class="block text-xs font-semibold text-slate-700 mb-1">Ghi chú lưu ý</label>
+          <input type="text" id="form-week-notes" placeholder="Ghi chú thêm nếu có..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+          <button type="button" id="btn-cancel-week-modal" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Hủy</button>
+          <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-all">Lưu mục tiêu tuần</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ADD / EDIT PRIORITY TASK -->
+  <div id="modal-priority" class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 hidden">
+    <div id="modal-priority-backdrop" class="modal-backdrop absolute inset-0"></div>
+    <div class="modal-container relative bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-100 z-10 my-auto">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="flame" class="w-5 h-5 text-rose-400"></i>
+          <h3 id="modal-priority-title" class="text-base font-bold">Thêm Việc Ưu Tiên Buổi Sau</h3>
+        </div>
+        <button type="button" id="btn-close-priority-modal" class="text-slate-400 hover:text-white transition-colors p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-priority-task" class="p-5 sm:p-6 space-y-4">
+        <input type="hidden" id="form-priority-id" value="">
+
+        <div>
+          <label for="form-priority-task-text" class="block text-xs font-semibold text-slate-700 mb-1">Nội dung việc ưu tiên <span class="text-rose-500">*</span></label>
+          <input type="text" id="form-priority-task-text" required placeholder="VD: Luyện hát nhóm nhỏ cho sinh viên Nam..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label for="form-priority-author" class="block text-xs font-semibold text-slate-700 mb-1">Người cập nhật <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-priority-author" required placeholder="VD: Trưởng nhóm Nam" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label for="form-priority-date" class="block text-xs font-semibold text-slate-700 mb-1">Ngày tạo <span class="text-rose-500">*</span></label>
+            <input type="date" id="form-priority-date" required class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+          <button type="button" id="btn-cancel-priority-modal" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Hủy</button>
+          <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition-all">Lưu việc ưu tiên</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite"></div>
+
+  <!-- Application Scripts -->
+  <script src="env-loader.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+  <script src="test-runner.js"></script>
+</body>
+</html>
