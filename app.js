@@ -417,11 +417,11 @@
 
     listEl.innerHTML = appState.priorities.map((item, idx) => `
       <li class="p-3 bg-slate-50 hover:bg-rose-50/50 rounded-xl transition-colors border border-slate-100 flex items-start justify-between gap-2 group">
-        <div class="flex items-start gap-2.5 flex-1">
+        <div class="flex items-start gap-2.5 flex-1 min-w-0">
           <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
-          <div class="flex-1">
-            <p class="font-medium text-slate-800 leading-relaxed">${escapeHtml(item.task)}</p>
-            <p class="text-[10px] text-slate-400 mt-0.5">Cập nhật bởi ${escapeHtml(item.author)} (${formatDateShort(item.date)})</p>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-slate-800 leading-relaxed break-all">${escapeHtml(item.task)}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5 truncate">Cập nhật bởi ${escapeHtml(item.author)} (${formatDateShort(item.date)})</p>
           </div>
         </div>
         

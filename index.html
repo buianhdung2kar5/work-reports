@@ -31,7 +31,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -122,7 +122,7 @@
     <section id="tab-tong-quan" class="tab-content active space-y-6">
       
       <!-- Top Banner Overview -->
-      <div class="glass-card rounded-3xl p-5 sm:p-8 relative overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
+      <div class="rounded-3xl p-5 sm:p-8 relative overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl border border-indigo-700/50">
         <div class="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8">
           <i data-lucide="sparkles" class="w-96 h-96"></i>
         </div>
@@ -174,48 +174,48 @@
       </div>
 
       <!-- Quick Metrics Grid (1 col mobile, 2 col tablet, 4 col desktop) -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         <!-- Metric 1 -->
         <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-emerald-500">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-            <i data-lucide="check-circle-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
           </div>
-          <div>
-            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Mục tiêu đạt</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-completed-weeks">1 / 4 Tuần</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide">Mục tiêu đạt</p>
+            <p class="text-xs sm:text-base font-semibold text-slate-800 tracking-tight leading-snug truncate" id="stat-completed-weeks">1 / 4 Tuần</p>
           </div>
         </div>
 
         <!-- Metric 2 -->
         <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-indigo-500">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-            <i data-lucide="notebook" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+            <i data-lucide="notebook" class="w-5 h-5"></i>
           </div>
-          <div>
-            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Buổi tập đã ghi</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-total-logs">3 Buổi</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide">Buổi tập đã ghi</p>
+            <p class="text-xs sm:text-base font-semibold text-slate-800 tracking-tight leading-snug truncate" id="stat-total-logs">3 Buổi</p>
           </div>
         </div>
 
         <!-- Metric 3 -->
         <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-amber-500">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-            <i data-lucide="users" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+            <i data-lucide="users" class="w-5 h-5"></i>
           </div>
-          <div>
-            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Tổng thành viên</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-total-members">35 Sinh viên</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide">Tổng thành viên</p>
+            <p class="text-xs sm:text-base font-semibold text-slate-800 tracking-tight leading-snug truncate" id="stat-total-members">35 Sinh viên</p>
           </div>
         </div>
 
         <!-- Metric 4 -->
         <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 flex items-center space-x-3 sm:space-x-4 border-l-4 border-l-rose-500">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-            <i data-lucide="alert-triangle" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
           </div>
-          <div>
-            <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Cần hỗ trợ gấp</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 tabular-nums" id="stat-need-support-count">3 Sinh viên / Nhóm</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide">Cần hỗ trợ gấp</p>
+            <p class="text-xs sm:text-base font-semibold text-slate-800 tracking-tight leading-snug truncate" id="stat-need-support-count">3 Sinh viên / Nhóm</p>
           </div>
         </div>
       </div>
