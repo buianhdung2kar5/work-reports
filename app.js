@@ -156,7 +156,7 @@
   const modalLog = document.getElementById('modal-log');
   const modalWeek = document.getElementById('modal-week');
   const modalPriority = document.getElementById('modal-priority');
-  
+
   const formLog = document.getElementById('form-practice-log');
   const formWeek = document.getElementById('form-weekly-goal');
   const formPriority = document.getElementById('form-priority-task');
@@ -243,7 +243,7 @@
 
   function renderHeaderAndBanner(overallProgress, statusInfo) {
     const ov = appState.overview;
-    
+
     const topBadge = document.getElementById('badge-top-status');
     if (topBadge) {
       topBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusInfo.badgeClass}`;
@@ -255,21 +255,37 @@
     document.getElementById('overview-title').textContent = ov.showName;
     document.getElementById('overview-perf-date').textContent = formatDateVN(ov.performanceDate);
     document.getElementById('overview-teachers').textContent = ov.teachers;
-    
+
     const bannerBadge = document.getElementById('overview-status-badge');
     if (bannerBadge) {
       bannerBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${statusInfo.badgeClass}`;
       bannerBadge.textContent = ov.overallStatus || statusInfo.text;
     }
 
-    document.getElementById('overview-general-goal').textContent = ov.generalGoal;
-    document.getElementById('overall-percent-num').textContent = `${overallProgress}%`;
+    document.getElementById('overview-general-goal').textContent = ov.generalGoal || 'Chưa có dữ liệu';
+
+    const percentEl = document.getElementById('overall-percent-num');
+    if (percentEl) {
+      if (!appState.weeklyGoals || appState.weeklyGoals.length === 0) {
+        percentEl.textContent = "Chưa có dữ liệu";
+        percentEl.className = "text-xs font-bold tracking-tight text-white/90";
+      } else {
+        percentEl.textContent = `${overallProgress}%`;
+        percentEl.className = "text-2xl sm:text-3xl font-black tabular-nums tracking-tight";
+      }
+    }
 
     const statusTextEl = document.getElementById('overall-status-text');
     if (statusTextEl) {
-      if (overallProgress >= 90) statusTextEl.textContent = "Sẵn sàng biểu diễn!";
-      else if (overallProgress >= 60) statusTextEl.textContent = "Tiến độ đạt yêu cầu";
-      else statusTextEl.textContent = "Cần tăng tốc & hỗ trợ nhóm tập";
+      if (!appState.weeklyGoals || appState.weeklyGoals.length === 0) {
+        statusTextEl.textContent = "Chưa có dữ liệu tiến độ";
+      } else if (overallProgress >= 90) {
+        statusTextEl.textContent = "Sẵn sàng biểu diễn!";
+      } else if (overallProgress >= 60) {
+        statusTextEl.textContent = "Tiến độ đạt yêu cầu";
+      } else {
+        statusTextEl.textContent = "Cần tăng tốc & hỗ trợ nhóm tập";
+      }
     }
 
     if (ov.performanceDate) {
@@ -288,15 +304,44 @@
   }
 
   function renderMetrics(overallProgress) {
-    const completedWeeks = appState.weeklyGoals.filter(w => w.progress >= 90).length;
-    document.getElementById('stat-completed-weeks').textContent = `${completedWeeks} / ${appState.weeklyGoals.length} Tuần`;
-    document.getElementById('stat-total-logs').textContent = `${appState.logs.length} Buổi`;
-    
-    const totalMem = appState.overview.totalMembers || 35;
-    document.getElementById('stat-total-members').textContent = `${totalMem} Sinh viên`;
+    const completedWeeks = appState.weeklyGoals ? appState.weeklyGoals.filter(w => w.progress >= 90).length : 0;
+    const elCompleted = document.getElementById('stat-completed-weeks');
+    if (elCompleted) {
+      if (!appState.weeklyGoals || appState.weeklyGoals.length === 0 || completedWeeks === 0) {
+        elCompleted.textContent = "Chưa có dữ liệu";
+      } else {
+        elCompleted.textContent = `${completedWeeks} / ${appState.weeklyGoals.length} Tuần`;
+      }
+    }
 
-    const supportLogs = appState.logs.filter(l => l.supportNeeded && l.supportNeeded.trim() !== '');
-    document.getElementById('stat-need-support-count').textContent = `${supportLogs.length} Sinh viên / Nhóm`;
+    const elTotalLogs = document.getElementById('stat-total-logs');
+    if (elTotalLogs) {
+      if (!appState.logs || appState.logs.length === 0) {
+        elTotalLogs.textContent = "Chưa có dữ liệu";
+      } else {
+        elTotalLogs.textContent = `${appState.logs.length} Buổi`;
+      }
+    }
+
+    const totalMem = appState.overview ? appState.overview.totalMembers : 0;
+    const elTotalMem = document.getElementById('stat-total-members');
+    if (elTotalMem) {
+      if (!totalMem || totalMem === 0) {
+        elTotalMem.textContent = "Chưa có dữ liệu";
+      } else {
+        elTotalMem.textContent = `${totalMem} Sinh viên`;
+      }
+    }
+
+    const supportLogs = appState.logs ? appState.logs.filter(l => l.supportNeeded && l.supportNeeded.trim() !== '') : [];
+    const elSupport = document.getElementById('stat-need-support-count');
+    if (elSupport) {
+      if (supportLogs.length === 0) {
+        elSupport.textContent = "Chưa có dữ liệu";
+      } else {
+        elSupport.textContent = `${supportLogs.length} Sinh viên / Nhóm`;
+      }
+    }
   }
 
   function renderCharts(overallProgress) {
@@ -349,12 +394,12 @@
           scales: {
             y: {
               beginAtZero: true, max: 100,
-              ticks: { callback: function(val) { return val + '%'; }, font: { family: 'Be Vietnam Pro', size: 11 } },
+              ticks: { callback: function (val) { return val + '%'; }, font: { family: 'Be Vietnam Pro', size: 11 } },
               grid: { color: '#f1f5f9' }
             },
             x: { ticks: { font: { family: 'Be Vietnam Pro', size: 11 } }, grid: { display: false } }
           },
-          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ` Tiến độ: ${context.raw}%`; } } } }
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return ` Tiến độ: ${context.raw}%`; } } } }
         }
       });
     }
@@ -366,7 +411,7 @@
     if (!listEl) return;
 
     if (!appState.priorities || appState.priorities.length === 0) {
-      listEl.innerHTML = `<li class="p-3 bg-slate-50 rounded-xl text-slate-500 italic">Chưa có ưu tiên nào được ghi nhận.</li>`;
+      listEl.innerHTML = `<li class="p-3 bg-slate-50 rounded-xl text-slate-500 italic font-medium text-center">Chưa có dữ liệu</li>`;
       return;
     }
 
@@ -408,49 +453,51 @@
     const filtered = appState.weeklyGoals.filter(w => filterStatus === 'ALL' || w.status === filterStatus);
 
     if (filtered.length === 0) {
-      container.innerHTML = `<div class="col-span-full glass-card rounded-2xl p-8 text-center text-slate-500">Không tìm thấy mục tiêu tuần phù hợp bộ lọc.</div>`;
+      container.innerHTML = `<div class="col-span-full glass-card rounded-2xl p-8 text-center text-slate-500 font-medium italic">Chưa có dữ liệu</div>`;
       return;
     }
 
     container.innerHTML = filtered.map(w => {
       const badgeClass = w.status === 'Đạt' ? 'badge-status-dat' :
-                         w.status === 'Đang thực hiện' ? 'badge-status-dang-tap' :
-                         w.status === 'Cần hỗ trợ' ? 'badge-status-can-ho-tro' : 'badge-status-chua-bat-dau';
+        w.status === 'Đang thực hiện' ? 'badge-status-dang-tap' :
+          w.status === 'Cần hỗ trợ' ? 'badge-status-can-ho-tro' : 'badge-status-chua-bat-dau';
 
       return `
-        <div class="glass-card glass-card-hover rounded-2xl p-5 sm:p-6 space-y-4 relative" data-id="${w.id}">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
-                ${escapeHtml(w.weekLabel)}
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-6 space-y-3.5 relative overflow-hidden" data-id="${w.id}">
+          <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 pb-3 border-b border-slate-100/80">
+            <div class="flex items-center space-x-2.5 min-w-0">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold shrink-0 shadow-sm">
+                <i data-lucide="calendar-range" class="w-4 h-4 sm:w-5 sm:h-5"></i>
               </div>
-              <div>
-                <h3 class="text-base font-bold text-slate-900">${escapeHtml(w.weekLabel)}</h3>
-                <span class="text-xs text-slate-500">${escapeHtml(w.timeframe)}</span>
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 truncate">${escapeHtml(w.weekLabel)}</h3>
+                <span class="text-[11px] sm:text-xs text-slate-500 block truncate">${escapeHtml(w.timeframe)}</span>
               </div>
             </div>
 
-            <div class="flex items-center space-x-2">
-              <select data-action="change-week-status" data-id="${w.id}" class="text-xs font-semibold rounded-full px-3 py-1 ${badgeClass} cursor-pointer focus:ring-2 focus:ring-indigo-500">
+            <div class="flex items-center justify-between xs:justify-end space-x-2 w-full xs:w-auto shrink-0 pt-1 xs:pt-0 border-t xs:border-t-0 border-slate-100/60">
+              <select data-action="change-week-status" data-id="${w.id}" class="text-[11px] sm:text-xs font-semibold rounded-full px-2.5 py-1 ${badgeClass} cursor-pointer focus:ring-2 focus:ring-indigo-500 border-none outline-none max-w-[145px] xs:max-w-none text-ellipsis">
                 <option value="Đạt" ${w.status === 'Đạt' ? 'selected' : ''}>Đạt</option>
                 <option value="Đang thực hiện" ${w.status === 'Đang thực hiện' ? 'selected' : ''}>Đang thực hiện</option>
                 <option value="Cần hỗ trợ" ${w.status === 'Cần hỗ trợ' ? 'selected' : ''}>Cần hỗ trợ</option>
                 <option value="Chưa bắt đầu" ${w.status === 'Chưa bắt đầu' ? 'selected' : ''}>Chưa bắt đầu</option>
               </select>
-              <button type="button" data-action="edit-week" data-id="${w.id}" class="text-slate-400 hover:text-indigo-600 transition-colors p-1" title="Sửa mục tiêu">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
-              <button type="button" data-action="delete-week" data-id="${w.id}" class="text-slate-400 hover:text-rose-600 transition-colors p-1" title="Xóa tuần">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+              <div class="flex items-center space-x-1 shrink-0">
+                <button type="button" data-action="edit-week" data-id="${w.id}" class="text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg p-1.5 transition-colors" title="Sửa mục tiêu">
+                  <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+                <button type="button" data-action="delete-week" data-id="${w.id}" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg p-1.5 transition-colors" title="Xóa tuần">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="space-y-2">
-            <p class="text-xs font-bold text-indigo-900 bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-100">🎯 ${escapeHtml(w.goal)}</p>
-            <p class="text-xs text-slate-700 leading-relaxed"><strong class="text-slate-900">Nội dung:</strong> ${escapeHtml(w.content)}</p>
-            <p class="text-xs text-slate-600"><strong class="text-slate-900">Phụ trách:</strong> ${escapeHtml(w.targetGroup)}</p>
-            <p class="text-xs text-slate-600"><strong class="text-slate-900">Tiêu chí:</strong> ${escapeHtml(w.criteria)}</p>
+            <p class="text-xs font-bold text-indigo-900 bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-100 break-words">🎯 ${escapeHtml(w.goal)}</p>
+            <p class="text-xs text-slate-700 leading-relaxed break-words"><strong class="text-slate-900">Nội dung:</strong> ${escapeHtml(w.content)}</p>
+            <p class="text-xs text-slate-600 break-words"><strong class="text-slate-900">Phụ trách:</strong> ${escapeHtml(w.targetGroup)}</p>
+            <p class="text-xs text-slate-600 break-words"><strong class="text-slate-900">Tiêu chí:</strong> ${escapeHtml(w.criteria)}</p>
           </div>
 
           <div class="pt-2 space-y-1.5 border-t border-slate-100">
@@ -461,7 +508,7 @@
             <input type="range" min="0" max="100" value="${w.progress}" data-action="slider-week-progress" data-id="${w.id}" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
           </div>
 
-          ${w.notes ? `<div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-start gap-2"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5"></i><span>${escapeHtml(w.notes)}</span></div>` : ''}
+          ${w.notes ? `<div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-start gap-2 break-words"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5"></i><span>${escapeHtml(w.notes)}</span></div>` : ''}
         </div>
       `;
     }).join('');
@@ -486,7 +533,7 @@
       weekObj.progress = newProgress;
       if (newProgress >= 90) weekObj.status = 'Đạt';
       else if (newProgress > 0 && weekObj.status === 'Chưa bắt đầu') weekObj.status = 'Đang thực hiện';
-      
+
       saveState();
       if (window.SupabaseStore) window.SupabaseStore.saveWeeklyGoal(weekObj);
       renderAll();
@@ -517,13 +564,13 @@
     const searchTerm = (document.getElementById('search-logs')?.value || '').toLowerCase();
     const filtered = appState.logs.filter(l => {
       return l.content.toLowerCase().includes(searchTerm) ||
-             (l.issues && l.issues.toLowerCase().includes(searchTerm)) ||
-             (l.supportNeeded && l.supportNeeded.toLowerCase().includes(searchTerm)) ||
-             l.author.toLowerCase().includes(searchTerm);
+        (l.issues && l.issues.toLowerCase().includes(searchTerm)) ||
+        (l.supportNeeded && l.supportNeeded.toLowerCase().includes(searchTerm)) ||
+        l.author.toLowerCase().includes(searchTerm);
     });
 
     if (filtered.length === 0) {
-      container.innerHTML = `<div class="glass-card rounded-2xl p-8 text-center text-slate-500">Chưa có nhật ký buổi tập nào phù hợp.</div>`;
+      container.innerHTML = `<div class="glass-card rounded-2xl p-8 text-center text-slate-500 font-medium italic">Chưa có dữ liệu</div>`;
       return;
     }
 
@@ -589,6 +636,11 @@
       const el = document.getElementById(elementId);
       if (!el) return;
 
+      if (!list || list.length === 0) {
+        el.innerHTML = `<li class="p-2 text-xs text-slate-400 italic font-medium">Chưa có dữ liệu</li>`;
+        return;
+      }
+
       el.innerHTML = list.map((item, idx) => `
         <li class="flex items-start justify-between gap-2 p-2 rounded-xl hover:bg-slate-50 transition-colors group">
           <div class="flex items-start gap-2.5">
@@ -607,6 +659,9 @@
           const i = Number(e.target.getAttribute('data-index'));
           appState.notes[cat][i].checked = e.target.checked;
           saveState();
+          if (window.SupabaseStore) {
+            window.SupabaseStore.updateNoteChecked(cat, appState.notes[cat][i]);
+          }
           renderNotes();
         });
       });
@@ -615,8 +670,12 @@
         btn.addEventListener('click', (e) => {
           const cat = e.currentTarget.getAttribute('data-category');
           const i = Number(e.currentTarget.getAttribute('data-index'));
+          const removedNote = appState.notes[cat][i];
           appState.notes[cat].splice(i, 1);
           saveState();
+          if (window.SupabaseStore && removedNote) {
+            window.SupabaseStore.deleteNote(cat, removedNote);
+          }
           renderNotes();
           showToast("Đã xóa ghi chú!", "info");
         });
@@ -940,6 +999,9 @@
       const newNote = { id: Date.now(), text: text.trim(), checked: false };
       appState.notes[categoryKey].push(newNote);
       saveState();
+      if (window.SupabaseStore) {
+        window.SupabaseStore.saveNote(categoryKey, newNote);
+      }
       renderNotes();
       showToast("Đã thêm ghi chú mới!", "success");
     }
@@ -993,9 +1055,11 @@
 
   function closeModal(modalEl) {
     if (window.gsap) {
-      gsap.to(modalEl.querySelector('.modal-container'), { scale: 0.95, opacity: 0, duration: 0.15, onComplete: () => {
-        modalEl.classList.add('hidden');
-      }});
+      gsap.to(modalEl.querySelector('.modal-container'), {
+        scale: 0.95, opacity: 0, duration: 0.15, onComplete: () => {
+          modalEl.classList.add('hidden');
+        }
+      });
     } else {
       modalEl.classList.add('hidden');
     }
@@ -1059,7 +1123,7 @@
 
     const toast = document.createElement('div');
     const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-slate-900';
-    
+
     toast.className = `pointer-events-auto px-4 py-3 rounded-2xl text-white text-xs font-semibold shadow-xl ${bgClass} flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300`;
     toast.innerHTML = `
       <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" class="w-4 h-4"></i>

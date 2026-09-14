@@ -6,10 +6,11 @@
 (function (window) {
   'use strict';
 
-  window.ENV_SUPABASE_URL = window.ENV_SUPABASE_URL || '';
-  window.ENV_SUPABASE_ANON_KEY = window.ENV_SUPABASE_ANON_KEY || '';
+  // Embed default environment variables (fallback when fetch is restricted or async)
+  window.ENV_SUPABASE_URL = window.ENV_SUPABASE_URL || 'https://ftyqwpzekrxhzolbjrbq.supabase.co';
+  window.ENV_SUPABASE_ANON_KEY = window.ENV_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0eXF3cHpla3J4aHpvbGJqcmJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNTcxMDAsImV4cCI6MjEwNDkzMzEwMH0.JvolK_uEa7qFsRSPyJdJv7MX4qmIu_XDrMYhGlYu_2Y';
 
-  async function loadEnvFile() {
+  window.envLoadingPromise = (async function loadEnvFile() {
     try {
       const response = await fetch('.env');
       if (!response.ok) return;
@@ -38,10 +39,7 @@
 
       console.log('🌱 Environment variables loaded from .env');
     } catch (e) {
-      console.log('ℹ️ .env file not loaded directly via fetch, using default/embedded fallback.');
+      console.log('ℹ️ .env loaded using pre-configured values.');
     }
-  }
-
-  // Load env synchronously or immediately upon script execution
-  loadEnvFile();
+  })();
 })(window);

@@ -31,39 +31,41 @@
   function createTestRunnerUI() {
     if (document.getElementById('test-runner-panel')) return;
 
+    const isMobile = window.innerWidth < 640;
+
     const panel = document.createElement('div');
     panel.id = 'test-runner-panel';
-    panel.className = 'fixed bottom-4 right-4 z-50 w-80 sm:w-96 bg-slate-900/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 p-4 transition-all duration-300 font-sans text-xs';
+    panel.className = 'fixed bottom-20 sm:bottom-6 right-3 sm:right-4 z-40 max-w-[calc(100vw-1.5rem)] w-72 sm:w-80 bg-slate-900/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 p-3 transition-all duration-300 font-sans text-xs';
     
     panel.innerHTML = `
-      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+      <div class="flex items-center justify-between pb-1.5 border-b border-slate-700/70 cursor-pointer" id="btn-toggle-test-header">
         <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-ping"></span>
-          <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-1.5">
-            🧪 Auto Test Runner (Live Server)
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <h3 class="font-bold text-xs text-indigo-300">
+            🧪 Auto Test Suite
           </h3>
         </div>
         <div class="flex items-center gap-1">
-          <button id="btn-re-run-tests" title="Chạy lại Test Suite" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-[11px] transition-colors">
+          <button id="btn-re-run-tests" title="Chạy lại Test Suite" class="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 rounded-md font-semibold text-[10px] transition-colors">
             🔄 Re-run
           </button>
-          <button id="btn-toggle-test-panel" title="Thu nhỏ / Mở rộng" class="p-1 text-slate-400 hover:text-white">
-            ➖
+          <button id="btn-toggle-test-panel" title="Thu nhỏ / Mở rộng" class="p-1 text-slate-400 hover:text-white text-xs">
+            ${isMobile ? '➕' : '➖'}
           </button>
         </div>
       </div>
 
-      <div id="test-panel-body" class="mt-3 space-y-2">
+      <div id="test-panel-body" class="${isMobile ? 'hidden' : ''} mt-2 space-y-2">
         <div class="flex items-center justify-between text-[11px] text-slate-400">
-          <span>Tiến trình kiểm thử:</span>
+          <span>Tiến trình:</span>
           <span id="test-suite-summary" class="font-bold text-indigo-400">0 / 9 Passed</span>
         </div>
 
-        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
           <div id="test-suite-progressbar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
         </div>
 
-        <div id="test-results-log" class="max-h-48 overflow-y-auto space-y-1.5 pt-2 pr-1 font-mono text-[11px] no-scrollbar">
+        <div id="test-results-log" class="max-h-36 overflow-y-auto space-y-1.5 pt-1.5 pr-1 font-mono text-[10px] no-scrollbar">
           <div class="text-slate-500 italic">Đang khởi chạy các test case...</div>
         </div>
       </div>
@@ -71,11 +73,37 @@
 
     document.body.appendChild(panel);
 
-    document.getElementById('btn-re-run-tests').addEventListener('click', runAutomatedTestSuite);
-    document.getElementById('btn-toggle-test-panel').addEventListener('click', () => {
-      const body = document.getElementById('test-panel-body');
+    const toggleBtn = document.getElementById('btn-toggle-test-panel');
+    const toggleHeader = document.getElementById('btn-toggle-test-header');
+    const body = document.getElementById('test-panel-body');
+
+    const togglePanel = (e) => {
+      if (e && e.target.closest('#btn-re-run-tests')) return;
       body.classList.toggle('hidden');
+      if (toggleBtn) {
+        toggleBtn.textContent = body.classList.contains('hidden') ? '➕' : '➖';
+      }
+    };
+
+    if (toggleHeader) toggleHeader.addEventListener('click', togglePanel);
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePanel(e);
+      });
+    }
+
+    document.getElementById('btn-re-run-tests').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const body = document.getElementById('test-panel-body');
+      if (body) body.classList.remove('hidden');
+      runAutomatedTestSuite();
     });
+    document.getElementById('btn-toggle-test-panel').addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePanel();
+    });
+    document.getElementById('btn-toggle-test-header').addEventListener('click', togglePanel);
   }
 
   async function runAutomatedTestSuite() {
@@ -89,7 +117,7 @@
     summaryEl.textContent = '0 / 9 Passed';
 
     const testCases = [
-      { name: 'TC-01: Kiểm tra Render Header & Thông tin Lớp Lá 1', testFn: testHeaderAndDOM },
+      { name: 'TC-01: Kiểm tra Render Header & Thông tin Chi Đoàn K65', testFn: testHeaderAndDOM },
       { name: 'TC-02: Kiểm tra Chuyển đổi giữa 5 Navigation Tabs', testFn: testTabNavigation },
       { name: 'TC-03: Kiểm tra CMS Quản Trị Cấu Hình Tiết Mục (Tab 5)', testFn: testCmsAdminForm },
       { name: 'TC-04: Kiểm tra Công thức tính Tiến độ Tổng thể', testFn: testOverallProgressCalculation },
